@@ -1,12 +1,15 @@
 "use strict";
+//framework para trabajar en js
 const express = require('express');
 const app = express();
 const cors = require('cors');
 app.use(cors());
+//Conección con servidor local
 const configuracion = {
     hostname: "127.0.0.1",
     port: 3000,
 };
+//Conección con base de datos
 const mysql = require('mysql');
 let connection = mysql.createConnection({
     host: '127.0.0.1',
@@ -32,8 +35,6 @@ app.get('/productos_vigentes/:nombreProducto', (req, res) => {
 });
 //OBTIENE TODO LO QUE ESTE EN LA TABLA FARMACIAS (ID, NOMBRE Y FOTO DE LAS FARMACIAS)
 app.get('/farmacias', (req, res) => {
-    //let idFarmacia = req.params.idFarmacia;
-    //connection.query("SELECT linkLogo FROM farmacias JOIN productos_vigentes ON productos_vigentes.idFarmacia = farmacias.idFarmacia ", function(error:any, results:any, fields:any) {
     connection.query("SELECT * FROM farmacias", function (error, results, fields) {
         res.send(JSON.stringify(results));
         //console.log(`El id es ${idFarmacia}`); 

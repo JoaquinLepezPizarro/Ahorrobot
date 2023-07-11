@@ -25,6 +25,7 @@ def scrollDown():
     """Esta funcion permite cargar todos los elementos de la pagina hacia abajo, realizando el scrolldown que permite que los productos queden visibles para asi extraer los datos"""
     
     print("\nRealizando proceso de scroll down...")
+    cantidadIteraciones = 0
 
     while True:
         #Se compara cual era la pagina antes de realizar el cambio de pagina para evaluar si esta es distinta o si es la misma (en el caso de que ya sea la ultima)
@@ -39,16 +40,38 @@ def scrollDown():
                 WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div/div[1]/div/div[2]/div/div/section/div[2]/div/div[5]/section/div/div/div/div/a/div'))).click()
             
             #Se da tiempo a que cargue la pagina. En equipos con conexiones mas lentas este numero debe aumentarse. Fue inicializado en un alto valor considerando una conexion lenta, para disminuir cantidad de fallos.
-            sleep(10)
+            cantidadIteraciones += 1
+            tiempoDeEspera = 10 + cantidadIteraciones // 5
+            print(f"Esperando {tiempoDeEspera} segundos para que carguen los productos de la pagina N°{cantidadIteraciones + 1}")
+            sleep(tiempoDeEspera)
             
             paginaDespues = driver.current_url
             if paginaDespues == paginaAntes:
                 print("Scroll down completado...")
                 break
         except:
-            print("Scroll down completado...")
-            break
-    
+            try:
+                botonMostrarMas = (driver.find_element(By.XPATH,'/html/body/div[2]/div/div[1]/div/div[3]/div/div/section/div[2]/div/div[3]/div/div[2]/div/div[3]/div/div/div/div/div/a'))
+                
+                #Aqui se consideran dos formatos para clickear el boton "Mostrar Mas" debido a que ocasionalmente el boton dejaba de ser clickeable
+                try:
+                    driver.execute_script("arguments[0].click();", botonMostrarMas)
+                except:
+                    WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div/div[1]/div/div[3]/div/div/section/div[2]/div/div[3]/div/div[2]/div/div[3]/div/div/div/div/div/a'))).click()
+                
+                #Se da tiempo a que cargue la pagina. En equipos con conexiones mas lentas este numero debe aumentarse. Fue inicializado en un alto valor considerando una conexion lenta, para disminuir cantidad de fallos.
+                cantidadIteraciones += 1
+                tiempoDeEspera = 10 + cantidadIteraciones // 5
+                print(f"Esperando {tiempoDeEspera} segundos para que carguen los productos de la pagina N°{cantidadIteraciones + 1}")
+                sleep(tiempoDeEspera)
+                
+                paginaDespues = driver.current_url
+                if paginaDespues == paginaAntes:
+                    print("Scroll down completado...")
+                    break
+            except:
+                print("Scroll down completado...")
+                break
 
 
 def scrapingCategoriaSimi(link, lista):
@@ -57,6 +80,7 @@ def scrapingCategoriaSimi(link, lista):
     driver.get(link)
     sleep(10)
     scrollDown()
+    numeroProducto = 0
 
     #Se consideran dos xpath distintos ya que la pagina presenta dos formatos ocasionalmente
     try:
@@ -71,6 +95,7 @@ def scrapingCategoriaSimi(link, lista):
         try:
             disponibilidad = (driver.find_element(By.XPATH,f'//*[@id="gallery-layout-container"]/div[{i+1}]/section/a/article/div[4]/div/div[2]/button/div')).text
             if disponibilidad == "Añadir al carrito" or disponibilidad == "AÑADIR AL CARRITO": 
+                numeroProducto += 1
                 datosProducto = []
                 datosProducto.clear
 
@@ -92,6 +117,7 @@ def scrapingCategoriaSimi(link, lista):
                 lista.append(datosProducto)
 
                 print(f"\nFarmacia =      {idFarmacia}")
+                print(f"N° Producto =   {numeroProducto}")
                 print(f"Descripcion =   {descripcion}")
                 print(f"Precio =        {precio}")
                 print(f"Link =          {linkProducto}")

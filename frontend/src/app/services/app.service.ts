@@ -13,18 +13,10 @@ export class AppService {
 
   productos: Productos[] = []
 
-  // public arregloProductos: Productos = {
-  //   idFarmacia:0,
-  //   descripcion: '',
-  //   precio: 0,
-  //   linkProducto: '',
-  //   linkFoto: ''
-  // }
-
   constructor(private servicio:HttpClient) { }
 
   mostrarProductosMasBaratos(nombreProducto:any):Observable<any> {
-    console.log(`ESTOY EN EL SERVICE: ${nombreProducto}`);
+    //console.log(`ESTOY EN EL SERVICE: ${nombreProducto}`);
     return this.servicio.get(`${this.servidor}/productos_vigentes/:${nombreProducto}`);
   }
 

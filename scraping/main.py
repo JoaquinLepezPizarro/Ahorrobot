@@ -1,5 +1,5 @@
 from librerias import *
-instalarLibrerias()
+# instalarLibrerias()
 
 import chromedriver_autoinstaller
 chromedriver_autoinstaller.install()
